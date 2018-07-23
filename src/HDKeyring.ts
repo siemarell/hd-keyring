@@ -34,8 +34,8 @@ export class HDKeyring implements IKeyring {
     }
 
     async serialize() {
-        const accountNumbers = Object.keys(this.wallets).reduce((prev, next) => {
-            prev[next] = this.wallets[next].length
+        const accountNumbers = Object.entries(this.wallets).reduce((prev, [chain,wallets]) => {
+            prev[chain] = wallets.length
             return prev
         }, {} as any)
 
@@ -74,7 +74,7 @@ export class HDKeyring implements IKeyring {
 
     async exportAccount(accountId: string) {
         const wallet = this._getWalletForAccount(accountId)
-        return wallet && wallet.getSecret();
+        return wallet.getSecret();
     }
 
     async getAccounts() {
@@ -82,6 +82,7 @@ export class HDKeyring implements IKeyring {
     }
 
     async signMessage(accountId: string, bytes: Uint8Array): Promise<any> {
+        const wallet = this._getWalletForAccount(accountId)
         return undefined;
     }
 
@@ -96,11 +97,13 @@ export class HDKeyring implements IKeyring {
     }
 
     private _getWalletForAccount(accountId: string) {
-        return this._getFlatWallets().find(wallet => wallet.getId() === accountId)
+        const wallet = this._getFlatWallets().find(wallet => wallet.getId() === accountId)
+        if (!wallet) throw new Error(`Unable to find wallet for account ${accountId}`)
+        return wallet
     }
 
     private _getFlatWallets() {
-        return Object.keys(this.wallets).reduce((prev, next) => prev.concat(this.wallets[next]), []);
+        return Object.entries(this.wallets).reduce((prev, [_, wallets]) => prev.concat(wallets), []);
     }
 }
 
