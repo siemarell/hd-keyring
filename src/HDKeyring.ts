@@ -60,7 +60,7 @@ export class HDKeyring implements IKeyring {
 
     async exportAccount(accountId: string) {
         const wallet = this._getWalletForAccount(accountId)
-        return wallet.getSecret();
+        return wallet && wallet.getSecret();
     }
 
     async getAccounts() {

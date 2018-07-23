@@ -4,16 +4,19 @@ import {expect, assert} from 'chai'
 
 describe('HDKeyring', () => {
     const mnemonic = 'federal pole upset put bone crucial speed stable wire use muscle unit'
+    let keyring : HDKeyring;
+
+    beforeEach(()=>{
+        keyring = new HDKeyring({mnemonic: mnemonic})
+    })
 
     it('Should create valid ETH addresses', async () => {
-        const keyring = new HDKeyring({mnemonic: mnemonic})
         const accounts = await keyring.addAccounts()
         //console.log(accounts)
         expect(accounts[0]).to.be.eq('0x12c85a345326e9f6083d2db8012b6b41c13f2b83')
     })
 
     it('Should create multiple valid ETH addresses', async () => {
-        const keyring = new HDKeyring({mnemonic: mnemonic})
         const accounts = await keyring.addAccounts(3)
         //console.log(accounts)
         expect(accounts[0]).to.be.eq('0x12c85a345326e9f6083d2db8012b6b41c13f2b83')
@@ -22,7 +25,6 @@ describe('HDKeyring', () => {
     })
 
     it('Should have correct number of accounts', async () => {
-        const keyring = new HDKeyring({mnemonic: mnemonic})
         await keyring.addAccounts(3)
         const accounts = await keyring.getAccounts()
         //console.log(accounts)
@@ -30,7 +32,6 @@ describe('HDKeyring', () => {
     })
 
     it('Should throw on unidentified coin type', async () => {
-        const keyring = new HDKeyring({mnemonic: mnemonic})
         let failed = false
         try {
             await keyring.addAccounts(1, 'Imaginary')
@@ -41,11 +42,14 @@ describe('HDKeyring', () => {
     })
 
     it('Should export accounts', async () => {
-        const keyring = new HDKeyring({mnemonic: mnemonic})
         await keyring.addAccounts(3)
-        const accounts = await keyring.getAccounts()
         const exported = await keyring.exportAccount('0x12c85a345326e9f6083d2db8012b6b41c13f2b83')
-        console.log(exported)
-        expect(accounts.length).to.be.eq(3)
+        expect(exported).to.be.eq('0x68ac6b149ad8d6d193628cc955e0d55d19429884ea5382b6867cc7083ba121c6')
+    })
+
+    it('Should not export invalid', async () => {
+        await keyring.addAccounts(3)
+        const exported = await keyring.exportAccount('0x12c85a345326e9f6083d2db8012b6b41c13f21b83')
+        expect(exported).to.be.undefined
     })
 })
