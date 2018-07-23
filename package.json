@@ -12,7 +12,6 @@
     "@types/bip39": "^2.4.0",
     "@types/chai": "^4.1.4",
     "@types/chai-as-promised": "^7.1.0",
-    "@types/hdkey": "^0.7.0",
     "@types/mocha": "^5.2.5",
     "bip39": "^2.5.0",
     "chai": "^4.1.2",
