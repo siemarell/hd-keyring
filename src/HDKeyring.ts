@@ -1,7 +1,7 @@
 import {IKeyring} from './IKeyring'
 import HDNode = require("hdkey")
 import * as bip39 from 'bip39'
-import {WALLETS_MAP} from './codes'
+import {WALLETS_MAP} from './walletsMap'
 import {range} from './util'
 
 //const hdPathString = `m/44'/60'/0'/0`
@@ -49,17 +49,22 @@ export class HDKeyring implements IKeyring {
         }
 
         const oldLen = this.wallets[type].length
-        const keys = range(oldLen, oldLen + n).map(i=> coinRoot.deriveChild(i))
-
-        return keys.map(key=> WalletInfo.walletClass.fromPrivateKey(key.privateKey))
+        const newWallets = range(oldLen, oldLen + n)
+            .map(i=> {
+                const hdNode = coinRoot.deriveChild(i)
+                return WalletInfo.walletClass.fromHdPrivateKey(hdNode.privateKey)
+            })
+        this.wallets[type] = this.wallets[type].concat(newWallets)
+        return newWallets.map(wallet => wallet.getId())
     }
 
     async exportAccount(accountId: string) {
-        return '';
+        const wallet = this._getWalletForAccount(accountId)
+        return wallet.getSecret();
     }
 
     async getAccounts() {
-        return [''];
+        return this._getFlatWallets().map(wallet => wallet.getId());
     }
 
     async signMessage(accountId: string, bytes: Uint8Array): Promise<any> {
@@ -76,10 +81,15 @@ export class HDKeyring implements IKeyring {
         this.hdWallet = HDNode.fromMasterSeed(seed)
     }
 
+    private _getWalletForAccount(accountId: string){
+        return this._getFlatWallets().find(wallet => wallet.getId()===accountId)
+    }
+
+    private _getFlatWallets(){
+        return Object.keys(this.wallets).reduce((prev, next)=> prev.concat(this.wallets[next]),[]);
+    }
 }
 
 interface ISerialized {
     mnemonic?: string
 }
-
-0x12c85a345326e9f6083d2db8012b6b41c13f2b83
