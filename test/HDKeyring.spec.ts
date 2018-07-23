@@ -47,9 +47,20 @@ describe('HDKeyring', () => {
         expect(exported).to.be.eq('0x68ac6b149ad8d6d193628cc955e0d55d19429884ea5382b6867cc7083ba121c6')
     })
 
-    it('Should not export invalid', async () => {
+    it('Should not export invalid account', async () => {
         await keyring.addAccounts(3)
         const exported = await keyring.exportAccount('0x12c85a345326e9f6083d2db8012b6b41c13f21b83')
         expect(exported).to.be.undefined
     })
+
+    it('Should serialize and deserialize', async () => {
+        await keyring.addAccounts(3)
+        const accountsBefore = await keyring.getAccounts()
+        const serialized = await keyring.serialize()
+        const deserialized = new HDKeyring(serialized)
+        const accountsAfter = await deserialized.getAccounts()
+        expect(accountsBefore).eql(accountsAfter)
+    })
+
+
 })

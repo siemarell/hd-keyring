@@ -16,19 +16,33 @@ export class HDKeyring implements IKeyring {
     private wallets: Record<string, any[]> = {}
 
     constructor(serialized: ISerialized = {}) {
-        this.wallets = Object.keys(WALLETS_MAP).reduce((prev,next)=> {prev[next] = [];return prev},this.wallets)
+        this.wallets = Object.keys(WALLETS_MAP).reduce((prev, next) => {
+            prev[next] = [];
+            return prev
+        }, this.wallets)
         this.hdPath = hdPathString
         this.deserialize(serialized)
     }
 
     async deserialize(serialized: ISerialized) {
-        this._initFromMnemonic(serialized.mnemonic)
+        if (serialized.mnemonic) this._initFromMnemonic(serialized.mnemonic)
+        if (serialized.accountNumbers){
+            Object.entries(serialized.accountNumbers).forEach(async ([type,n])=>{
+                await this.addAccounts(n,type)
+            })
+        }
     }
 
     async serialize() {
+        const accountNumbers = Object.keys(this.wallets).reduce((prev, next) => {
+            prev[next] = this.wallets[next].length
+            return prev
+        }, {} as any)
+
         return {
             mnemonic: this.mnemonic,
-        };
+            accountNumbers
+        }
     }
 
     async addAccounts(n = 1, type = 'ETH') {
@@ -42,7 +56,7 @@ export class HDKeyring implements IKeyring {
         }
 
         let coinRoot = this.roots[type]
-        if (!coinRoot){
+        if (!coinRoot) {
             const hdPath = `${this.hdPath}/${WalletInfo.hdCode}/0'/0`
             coinRoot = this.hdWallet.derive(hdPath)
             this.roots[type] = coinRoot
@@ -50,7 +64,7 @@ export class HDKeyring implements IKeyring {
 
         const oldLen = this.wallets[type].length
         const newWallets = range(oldLen, oldLen + n)
-            .map(i=> {
+            .map(i => {
                 const hdNode = coinRoot.deriveChild(i)
                 return WalletInfo.walletClass.fromHdPrivateKey(hdNode.privateKey)
             })
@@ -81,15 +95,16 @@ export class HDKeyring implements IKeyring {
         this.hdWallet = HDNode.fromMasterSeed(seed)
     }
 
-    private _getWalletForAccount(accountId: string){
-        return this._getFlatWallets().find(wallet => wallet.getId()===accountId)
+    private _getWalletForAccount(accountId: string) {
+        return this._getFlatWallets().find(wallet => wallet.getId() === accountId)
     }
 
-    private _getFlatWallets(){
-        return Object.keys(this.wallets).reduce((prev, next)=> prev.concat(this.wallets[next]),[]);
+    private _getFlatWallets() {
+        return Object.keys(this.wallets).reduce((prev, next) => prev.concat(this.wallets[next]), []);
     }
 }
 
 interface ISerialized {
-    mnemonic?: string
+    mnemonic?: string,
+    accountNumbers?: {string:number}
 }
