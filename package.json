@@ -7,5 +7,19 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/bip39": "^2.4.0",
+    "@types/chai": "^4.1.4",
+    "@types/hdkey": "^0.7.0",
+    "@types/mocha": "^5.2.5",
+    "bip39": "^2.5.0",
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
+    "ts-node": "^7.0.0"
+  },
+  "dependencies": {
+    "ethereumjs-wallet": "^0.6.0",
+    "hdkey": "^1.0.0"
+  }
 }
