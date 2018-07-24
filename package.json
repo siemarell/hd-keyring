@@ -18,6 +18,7 @@
     "ts-node": "^7.0.0"
   },
   "dependencies": {
+    "@waves/waves-signature-generator": "^0.13.0",
     "ethereumjs-wallet": "^0.6.0",
     "hdkey": "^1.0.0"
   }

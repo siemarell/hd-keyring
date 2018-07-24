@@ -1,10 +1,13 @@
 import ethjswallet = require('ethereumjs-wallet')
-import {IWallet} from "./interfaces";
+import {IWallet} from "../interfaces";
 
 /// Wrapper around existing wallet
 
 
 export class EthWallet implements IWallet {
+    public static hdCode = "60'"
+    public static coin = 'ETH'
+
     static fromHdPrivateKey(privateKey: Uint8Array): IWallet {
         const _wallet = ethjswallet.fromPrivateKey(privateKey)
         return new EthWallet(_wallet)
