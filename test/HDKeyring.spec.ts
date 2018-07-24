@@ -2,10 +2,6 @@ import {HDKeyring} from '../src/HDKeyring'
 import {describe, before, it} from 'mocha';
 import {expect, assert} from 'chai'
 
-import * as chai from 'chai'
-import * as chaiAsPromised from 'chai-as-promised';
-
-chai.use(chaiAsPromised)
 
 
 describe('HDKeyring', () => {

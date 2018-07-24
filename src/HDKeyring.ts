@@ -1,8 +1,9 @@
-import {IKeyring} from './IKeyring'
+import {IKeyring, IWallet} from './interfaces'
 import HDNode = require("hdkey")
 import * as bip39 from 'bip39'
 import {WALLETS_MAP} from './walletsMap'
 import {range} from './util'
+
 
 //const hdPathString = `m/44'/60'/0'/0`
 const hdPathString = `m/44'`
@@ -13,7 +14,7 @@ export class HDKeyring implements IKeyring {
     private hdWallet: HDNode
     private readonly hdPath: string
     private roots: Record<string, HDNode> = {}
-    private wallets: Record<string, any[]> = {}
+    private wallets: Record<string, IWallet[]> = {}
 
     constructor(serialized: ISerialized = {}) {
         this.wallets = Object.keys(WALLETS_MAP).reduce((prev, next) => {
@@ -83,11 +84,12 @@ export class HDKeyring implements IKeyring {
 
     async signMessage(accountId: string, bytes: Uint8Array): Promise<any> {
         const wallet = this._getWalletForAccount(accountId)
-        return undefined;
+        return wallet.signMessage(bytes);
     }
 
     async signTransaction(accountId: string, txData: any): Promise<any> {
-        return undefined;
+        const wallet = this._getWalletForAccount(accountId)
+        return wallet.signTransaction(txData);
     }
 
     private _initFromMnemonic(mnemonic: string) {
@@ -102,7 +104,7 @@ export class HDKeyring implements IKeyring {
         return wallet
     }
 
-    private _getFlatWallets() {
+    private _getFlatWallets(): IWallet[] {
         return Object.entries(this.wallets).reduce((prev, [_, wallets]) => prev.concat(wallets), []);
     }
 }

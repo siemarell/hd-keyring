@@ -1,8 +1,4 @@
-import EthWallet = require('ethereumjs-wallet')
-
-EthWallet.fromHdPrivateKey = EthWallet.fromPrivateKey
-EthWallet.prototype.getId = function(){return `0x${this.getAddress().toString('hex')}`}
-EthWallet.prototype.getSecret = function(){return `0x${this.getPrivateKey().toString('hex')}`}
+import {EthWallet} from './EthWallet'
 
 export const WALLETS_MAP: Record<string, IWalletInfo> = {
     'BTC': {
