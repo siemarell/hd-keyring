@@ -3,7 +3,6 @@ import {describe, before, it} from 'mocha';
 import {expect, assert} from 'chai'
 
 
-
 describe('HDKeyring', () => {
     const mnemonic = 'federal pole upset put bone crucial speed stable wire use muscle unit'
     let keyring: HDKeyring;
@@ -12,6 +11,7 @@ describe('HDKeyring', () => {
         keyring = new HDKeyring({mnemonic: mnemonic})
     })
 
+    /// Ethereum
     it('Should create valid ETH addresses', async () => {
         const accounts = await keyring.addAccounts()
         //console.log(accounts)
@@ -26,11 +26,37 @@ describe('HDKeyring', () => {
         expect(accounts[2]).to.be.eq('0x503964c4bb8dadc692914f17be11017890e64b35')
     })
 
+    it('Should export ETH accounts', async () => {
+        await keyring.addAccounts(3)
+        //
+        const exported = await keyring.exportAccount('0x12c85a345326e9f6083d2db8012b6b41c13f2b83')
+        expect(exported).to.be.eq('0x68ac6b149ad8d6d193628cc955e0d55d19429884ea5382b6867cc7083ba121c6')
+    })
+
+    it('Should not export invalid ETH account', async () => {
+        await keyring.addAccounts(3)
+        try {
+            await keyring.exportAccount('0x12c85a345326e9f6083d2db8012b6b41c13f21b83')
+            assert(false)
+        } catch (e) {
+            expect(e.message).equals('Unable to find wallet for account 0x12c85a345326e9f6083d2db8012b6b41c13f21b83')
+        }
+
+    })
+
     it('Should have correct number of accounts', async () => {
         await keyring.addAccounts(3)
         const accounts = await keyring.getAccounts()
         //console.log(accounts)
         expect(accounts.length).to.be.eq(3)
+    })
+
+
+    // WAVES
+
+    it('Should create valid WAVES PK', async () => {
+        const accounts = await keyring.addAccounts(1, 'WAVES')
+        console.log(accounts[0])
     })
 
     it('Should throw on unidentified coin type', async () => {
@@ -43,24 +69,6 @@ describe('HDKeyring', () => {
         }
     })
 
-    it('Should export accounts', async () => {
-        await keyring.addAccounts(3)
-        //
-        const exported = await keyring.exportAccount('0x12c85a345326e9f6083d2db8012b6b41c13f2b83')
-        expect(exported).to.be.eq('0x68ac6b149ad8d6d193628cc955e0d55d19429884ea5382b6867cc7083ba121c6')
-    })
-
-    it('Should not export invalid account', async () => {
-        await keyring.addAccounts(3)
-        try {
-            await keyring.exportAccount('0x12c85a345326e9f6083d2db8012b6b41c13f21b83')
-            assert(false)
-        } catch (e) {
-            expect(e.message).equals('Unable to find wallet for account 0x12c85a345326e9f6083d2db8012b6b41c13f21b83')
-        }
-
-    })
-
     it('Should serialize and deserialize', async () => {
         await keyring.addAccounts(3)
         const accountsBefore = await keyring.getAccounts()
@@ -69,6 +77,5 @@ describe('HDKeyring', () => {
         const accountsAfter = await deserialized.getAccounts()
         expect(accountsBefore).eql(accountsAfter)
     })
-
 
 })
