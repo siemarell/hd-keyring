@@ -19,6 +19,8 @@
   },
   "dependencies": {
     "@waves/waves-signature-generator": "^0.13.0",
+    "eth-sig-util": "^2.0.1",
+    "ethereumjs-util": "^5.2.0",
     "ethereumjs-wallet": "^0.6.0",
     "hdkey": "^1.0.0"
   }

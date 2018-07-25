@@ -7,9 +7,12 @@ import {range} from './util'
 
 //const hdPathString = `m/44'/60'/0'/0`
 const hdPathString = `m/44'`
+const type = 'HD Key Tree'
 
 export class HDKeyring implements IKeyring {
-    //static type = 'HD Key Tree'
+    public static type = type
+    public type = type
+
     private mnemonic: string = ''
     private hdWallet: HDNode
     private readonly hdPath: string
@@ -27,15 +30,15 @@ export class HDKeyring implements IKeyring {
 
     async deserialize(serialized: ISerialized) {
         if (serialized.mnemonic) this._initFromMnemonic(serialized.mnemonic)
-        if (serialized.accountNumbers){
-            Object.entries(serialized.accountNumbers).forEach(async ([type,n])=>{
-                await this.addAccounts(n,type)
+        if (serialized.accountNumbers) {
+            Object.entries(serialized.accountNumbers).forEach(async ([type, n]) => {
+                await this.addAccounts(n, type)
             })
         }
     }
 
     async serialize() {
-        const accountNumbers = Object.entries(this.wallets).reduce((prev, [chain,wallets]) => {
+        const accountNumbers = Object.entries(this.wallets).reduce((prev, [chain, wallets]) => {
             prev[chain] = wallets.length
             return prev
         }, {} as any)
@@ -73,13 +76,13 @@ export class HDKeyring implements IKeyring {
         return newWallets.map(wallet => wallet.getId())
     }
 
-    async exportAccount(accountId: string) {
-        const wallet = this._getWalletForAccount(accountId)
-        return wallet.getSecret();
-    }
-
     async getAccounts() {
         return this._getFlatWallets().map(wallet => wallet.getId());
+    }
+
+    async signTransaction(accountId: string, txData: any): Promise<any> {
+        const wallet = this._getWalletForAccount(accountId)
+        return wallet.signTransaction(txData);
     }
 
     async signMessage(accountId: string, bytes: Uint8Array): Promise<any> {
@@ -87,9 +90,13 @@ export class HDKeyring implements IKeyring {
         return wallet.signMessage(bytes);
     }
 
-    async signTransaction(accountId: string, txData: any): Promise<any> {
+    async signPersonalMessage(){ throw 'Not implemented' }
+
+    async singTypedData(){ throw 'Not implemented' }
+
+    async exportAccount(accountId: string) {
         const wallet = this._getWalletForAccount(accountId)
-        return wallet.signTransaction(txData);
+        return wallet.getSecret();
     }
 
     private _initFromMnemonic(mnemonic: string) {
@@ -111,5 +118,5 @@ export class HDKeyring implements IKeyring {
 
 interface ISerialized {
     mnemonic?: string,
-    accountNumbers?: {string:number}
+    accountNumbers?: { string: number }
 }
