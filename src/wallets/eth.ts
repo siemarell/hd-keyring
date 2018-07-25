@@ -8,7 +8,7 @@ export class EthWallet implements IWallet {
     public static hdCode = "60'";
     public static coin = 'ETH';
 
-    static fromHdPrivateKey(privateKey: Uint8Array): IWallet {
+    static fromHdPrivateKey(privateKey: Uint8Array): EthWallet {
         const _wallet = ethjswallet.fromPrivateKey(privateKey);
         return new EthWallet(_wallet)
     }
@@ -34,9 +34,10 @@ export class EthWallet implements IWallet {
 
     // For eth_sign, we need to sign transactions:
     // hd
-    signMessage(bytes: Uint8Array): Uint8Array {
+    signMessage(msgHash: string): string {
         const privateKey = this._wallet.getPrivateKey();
-        const msgSig = ethUtil.ecsign(bytes, privateKey);
+        const message = ethUtil.stripHexPrefix(msgHash)
+        const msgSig = ethUtil.ecsign(Buffer.from(message, 'hex'), privateKey);
         return ethUtil.bufferToHex(sigUtil.concatSig(msgSig.v, msgSig.r, msgSig.s));
     }
 
