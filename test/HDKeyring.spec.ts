@@ -1,6 +1,7 @@
-import {HDKeyring} from '../src/HDKeyring'
+import {HDKeyring} from '../src/HDKeyring';
 import {describe, before, it} from 'mocha';
-import {expect, assert} from 'chai'
+import {expect, assert} from 'chai';
+import * as SG from '@waves/waves-signature-generator';
 
 
 describe('HDKeyring', () => {
@@ -44,21 +45,24 @@ describe('HDKeyring', () => {
 
     })
 
-    it('Should have correct number of accounts', async () => {
-        await keyring.addAccounts(3)
-        const accounts = await keyring.getAccounts()
-        //console.log(accounts)
-        expect(accounts.length).to.be.eq(3)
-    })
-
 
     // WAVES
 
     it('Should create valid WAVES PK', async () => {
         const accounts = await keyring.addAccounts(1, 'WAVES')
-        console.log(accounts[0])
+        const rawPk = SG.libs.base58.decode(accounts[0])
+        const address = SG.utils.crypto.buildRawAddress(rawPk)
+        expect(SG.utils.crypto.isValidAddress(address)).to.be.true
     })
 
+    // GENERAL
+    it('Should have correct number of accounts', async () => {
+        await keyring.addAccounts(3)
+        await keyring.addAccounts(2, 'WAVES')
+        const accounts = await keyring.getAccounts()
+        //console.log(accounts)
+        expect(accounts.length).to.be.eq(5)
+    })
     it('Should throw on unidentified coin type', async () => {
         let failed = false
         try {
