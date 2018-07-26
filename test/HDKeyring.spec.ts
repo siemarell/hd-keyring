@@ -79,9 +79,6 @@ describe('HDKeyring', () => {
         const accountsBefore = await keyring.getAccounts()
         const serialized = await keyring.serialize()
         const deserialized = new HDKeyring(serialized)
-
-        //Todo: find out how to get rig of this
-        await asleep(1)
         const accountsAfter = await deserialized.getAccounts()
         expect(accountsBefore).eql(accountsAfter)
     })

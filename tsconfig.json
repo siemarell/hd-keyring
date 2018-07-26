@@ -8,8 +8,8 @@
     ],
     "module": "commonjs",
     "sourceMap": true,
-    "target": "es5",
-    "outDir": "dist"
+    "target": "es6",
+    "outDir": "/Users/siem/PycharmProjects/metamask-extension/app/scripts/waves/hd-keyring"
   },
   "include": [
     "src"

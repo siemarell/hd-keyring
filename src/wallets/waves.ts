@@ -5,7 +5,7 @@ import {create, TESTNET_CONFIG} from '@waves/waves-api'
 type KeyPair = {private: Uint8Array, public:Uint8Array}
 
 export class WavesWallet implements IWallet {
-    static async fromHdPrivateKey(privateKey: Uint8Array): Promise<IWallet> {
+    static fromHdPrivateKey(privateKey: Uint8Array): IWallet {
         const keyPair: KeyPair = SG.libs.axlsign.generateKeyPair(privateKey)
         return new WavesWallet(keyPair)
     }

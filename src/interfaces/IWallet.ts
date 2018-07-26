@@ -6,5 +6,5 @@ export interface IWallet {
 }
 
 export type IWalletClass = {
-    fromHdPrivateKey(privateKey: Uint8Array): Promise<IWallet>
+    fromHdPrivateKey(privateKey: Uint8Array): IWallet
 }

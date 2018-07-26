@@ -1,5 +1,6 @@
 import {IWallet} from "../interfaces";
 import EthSimpleKeyring = require('eth-simple-keyring');
+import ethereumjsWallet = require("ethereumjs-wallet");
 
 
 /// Wrapper around ethereumjs-wallet
@@ -7,12 +8,14 @@ export class EthWallet implements IWallet {
     public static hdCode = "60'";
     public static coin = 'ETH';
 
-    static async fromHdPrivateKey(privateKey: Uint8Array) {
+    static fromHdPrivateKey(privateKey: Uint8Array) {
         const privateKeyHex = Buffer.from(privateKey).toString('hex')
         const _keyring = new EthSimpleKeyring([privateKeyHex]);
-        await _keyring.deserialize([privateKeyHex])
-        const id = (await _keyring.getAccounts())[0]
-        return new EthWallet(_keyring, id)
+        const _wallet = ethereumjsWallet.fromPrivateKey(privateKey)
+        const _id = `0x${_wallet.getAddress().toString('hex')}`
+        //await _keyring.deserialize([privateKeyHex])
+        //const id = (await _keyring.getAccounts())[0]
+        return new EthWallet(_keyring, _id)
     }
 
     private constructor(private _keyring: any, private id: string) {

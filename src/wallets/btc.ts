@@ -1,7 +1,7 @@
 import {IWallet} from "../interfaces";
 
 export class BtcWallet implements IWallet{
-    static async fromHdPrivateKey(privateKey: Uint8Array): Promise<IWallet>{
+    static fromHdPrivateKey(privateKey: Uint8Array): IWallet{
         throw new Error('Not implemented')
     }
 

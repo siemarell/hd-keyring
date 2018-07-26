@@ -14,7 +14,7 @@ export class HDKeyring implements IKeyring {
     public static type = type
     public type = type
 
-    private mnemonic: string = ''
+    private mnemonic: string = null
     private hdWallet: HDNode
     private readonly hdPath: string
     private roots: Record<string, HDNode> = {}
@@ -68,11 +68,11 @@ export class HDKeyring implements IKeyring {
         }
 
         const oldLen = this.wallets[type].length
-        const newWallets = await Promise.all(range(oldLen, oldLen + n)
+        const newWallets = range(oldLen, oldLen + n)
             .map(i => {
                 const hdNode = coinRoot.deriveChild(i)
                 return WalletInfo.walletClass.fromHdPrivateKey(hdNode.privateKey)
-            }))
+            })
         this.wallets[type] = this.wallets[type].concat(newWallets)
         return newWallets.map(wallet => wallet.getId())
     }
