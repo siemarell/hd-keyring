@@ -14,8 +14,8 @@ describe('EthWallet', () => {
 
     let wallet: EthWallet;
 
-    beforeEach(() => {
-        wallet = EthWallet.fromHdPrivateKey(Buffer.from(privateKey, 'hex'))
+    beforeEach(async () => {
+        wallet = await EthWallet.fromHdPrivateKey(Buffer.from(privateKey, 'hex'))
     })
 
     it('Should correctly implement signMessage (eth_sign)', async() => {

@@ -3,6 +3,7 @@ import {describe, before, it} from 'mocha';
 import {expect, assert} from 'chai';
 import * as SG from '@waves/waves-signature-generator';
 
+const asleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 describe('HDKeyring', () => {
     const mnemonic = 'federal pole upset put bone crucial speed stable wire use muscle unit'
@@ -31,7 +32,7 @@ describe('HDKeyring', () => {
         await keyring.addAccounts(3)
         //
         const exported = await keyring.exportAccount('0x12c85a345326e9f6083d2db8012b6b41c13f2b83')
-        expect(exported).to.be.eq('0x68ac6b149ad8d6d193628cc955e0d55d19429884ea5382b6867cc7083ba121c6')
+        expect(exported).to.be.eq('68ac6b149ad8d6d193628cc955e0d55d19429884ea5382b6867cc7083ba121c6')
     })
 
     it('Should not export invalid ETH account', async () => {
@@ -78,6 +79,9 @@ describe('HDKeyring', () => {
         const accountsBefore = await keyring.getAccounts()
         const serialized = await keyring.serialize()
         const deserialized = new HDKeyring(serialized)
+
+        //Todo: find out how to get rig of this
+        await asleep(1)
         const accountsAfter = await deserialized.getAccounts()
         expect(accountsBefore).eql(accountsAfter)
     })

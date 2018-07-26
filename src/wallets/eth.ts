@@ -2,55 +2,63 @@ import ethjswallet = require('ethereumjs-wallet')
 import ethUtil = require('ethereumjs-util')
 import sigUtil = require('eth-sig-util')
 import {IWallet} from "../interfaces";
+import EthSimpleKeyring = require('eth-simple-keyring');
+
 
 /// Wrapper around ethereumjs-wallet
 export class EthWallet implements IWallet {
     public static hdCode = "60'";
     public static coin = 'ETH';
 
-    static fromHdPrivateKey(privateKey: Uint8Array): EthWallet {
-        const _wallet = ethjswallet.fromPrivateKey(privateKey);
-        return new EthWallet(_wallet)
+    static async fromHdPrivateKey(privateKey: Uint8Array) {
+        const privateKeyHex = Buffer.from(privateKey).toString('hex')
+        const _keyring = new EthSimpleKeyring([privateKeyHex]);
+        await _keyring.deserialize([privateKeyHex])
+        const id = (await _keyring.getAccounts())[0]
+        return new EthWallet(_keyring, id)
     }
 
-    private constructor(private _wallet: any) {
+    private constructor(private _keyring: any, private id: string) {
 
     }
 
-    getId(): string {
-        return `0x${this._wallet.getAddress().toString('hex')}`
+    getId() {
+        return this.id
     }
 
-    getSecret() {
-        return `0x${this._wallet.getPrivateKey().toString('hex')}`
+    async getSecret() {
+        const address = this.getId()
+        return this._keyring.exportAccount(address)
     }
 
     // tx is an instance of the ethereumjs-transaction class.
     async signTransaction(tx: any) {
-        const privateKey = this._wallet.getPrivateKey();
-        tx.sign(privateKey);
-        return tx
+        const address = this.getId()
+        return this._keyring.signTransaction(address, tx)
     }
 
     // For eth_sign, we need to sign transactions:
     // hd
     async signMessage(msgHash: string) {
-        const privateKey = this._wallet.getPrivateKey();
-        const message = ethUtil.stripHexPrefix(msgHash)
-        const msgSig = ethUtil.ecsign(Buffer.from(message, 'hex'), privateKey);
-        return ethUtil.bufferToHex(sigUtil.concatSig(msgSig.v, msgSig.r, msgSig.s));
+        const address = this.getId()
+        return this._keyring.signMessage(address, msgHash)
     }
 
     // For personal_sign, we need to prefix the message:
     async signPersonalMessage(msgHex: string) {
-        const privateKey = this._wallet.getPrivateKey();
-        return sigUtil.personalSign(privateKey, {data: msgHex})
+        const address = this.getId()
+        return this._keyring.signPersonalMessage(address, msgHex)
     }
 
     // personal_signTypedData, signs data along with the schema
     async signTypedData(typedData: any) {
-        const privateKey = this._wallet.getPrivateKey();
-        /// ToDo: use non legacy method
-        return sigUtil.signTypedDataLegacy(privateKey, {data: typedData})
+        const address = this.getId()
+        return this._keyring.signTypedData(address, typedData)
+    }
+
+    // For eth_sign, we need to sign transactions:
+    async newGethSignMessage(msgHex: any) {
+        const address = this.getId()
+        return this._keyring.newGethSignMessage(address, msgHex)
     }
 }

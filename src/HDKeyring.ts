@@ -68,11 +68,11 @@ export class HDKeyring implements IKeyring {
         }
 
         const oldLen = this.wallets[type].length
-        const newWallets = range(oldLen, oldLen + n)
+        const newWallets = await Promise.all(range(oldLen, oldLen + n)
             .map(i => {
                 const hdNode = coinRoot.deriveChild(i)
                 return WalletInfo.walletClass.fromHdPrivateKey(hdNode.privateKey)
-            })
+            }))
         this.wallets[type] = this.wallets[type].concat(newWallets)
         return newWallets.map(wallet => wallet.getId())
     }
@@ -91,12 +91,12 @@ export class HDKeyring implements IKeyring {
         return await wallet.signMessage(message);
     }
 
-    async signPersonalMessage(accountId: string, message: any){
+    async signPersonalMessage(accountId: string, message: any) {
         const wallet = this._getWalletForAccount(accountId) as EthWallet
         return await wallet.signPersonalMessage(message);
     }
 
-    async signTypedData(accountId: string, data: any){
+    async signTypedData(accountId: string, data: any) {
         const wallet = this._getWalletForAccount(accountId) as EthWallet
         return await wallet.signPersonalMessage(data);
     }
