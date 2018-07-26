@@ -26,7 +26,7 @@ export class EthWallet implements IWallet {
     }
 
     // tx is an instance of the ethereumjs-transaction class.
-    signTransaction(tx: any): any {
+    async signTransaction(tx: any) {
         const privateKey = this._wallet.getPrivateKey();
         tx.sign(privateKey);
         return tx
@@ -34,7 +34,7 @@ export class EthWallet implements IWallet {
 
     // For eth_sign, we need to sign transactions:
     // hd
-    signMessage(msgHash: string): string {
+    async signMessage(msgHash: string) {
         const privateKey = this._wallet.getPrivateKey();
         const message = ethUtil.stripHexPrefix(msgHash)
         const msgSig = ethUtil.ecsign(Buffer.from(message, 'hex'), privateKey);
@@ -42,13 +42,13 @@ export class EthWallet implements IWallet {
     }
 
     // For personal_sign, we need to prefix the message:
-    signPersonalMessage(msgHex: string) {
+    async signPersonalMessage(msgHex: string) {
         const privateKey = this._wallet.getPrivateKey();
         return sigUtil.personalSign(privateKey, {data: msgHex})
     }
 
     // personal_signTypedData, signs data along with the schema
-    signTypedData(typedData: any) {
+    async signTypedData(typedData: any) {
         const privateKey = this._wallet.getPrivateKey();
         /// ToDo: use non legacy method
         return sigUtil.signTypedDataLegacy(privateKey, {data: typedData})

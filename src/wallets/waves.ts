@@ -1,5 +1,6 @@
 import * as SG from '@waves/waves-signature-generator'
 import {IWallet} from "../interfaces";
+import {create, TESTNET_CONFIG} from '@waves/waves-api'
 
 type KeyPair = {private: Uint8Array, public:Uint8Array}
 export class WavesWallet implements IWallet {
@@ -7,6 +8,8 @@ export class WavesWallet implements IWallet {
         const keyPair: KeyPair = SG.libs.axlsign.generateKeyPair(privateKey)
         return new WavesWallet(keyPair)
     }
+
+    private Waves = create(TESTNET_CONFIG)
 
     private constructor(private keyPair: KeyPair) {
 
@@ -21,11 +24,15 @@ export class WavesWallet implements IWallet {
         return SG.libs.base58.encode(this.keyPair.private)
     }
 
-    signMessage(bytes: Uint8Array): Uint8Array {
+    async signMessage(bytes: Uint8Array):Promise<any> {
         return undefined;
     }
 
-    signTransaction(tx: any): any {
+    async signTransaction(txData: any) {
+        const tools = <any>this.Waves.tools
+        const transfer = await tools.createTransaction(txData.type, txData)
+        transfer.addProof(this.getSecret())
+        return await transfer.getJSON()
     }
     //
     // async serialize() {

@@ -18,13 +18,13 @@ describe('EthWallet', () => {
         wallet = EthWallet.fromHdPrivateKey(Buffer.from(privateKey, 'hex'))
     })
 
-    it('Should correctly implement signMessage (eth_sign)', () => {
+    it('Should correctly implement signMessage (eth_sign)', async() => {
         const msg = 'Hello'
         const msgHash = SG.libs.keccak256('\x19Ethereum Signed Message:\n' + msg.length + msg);
 
         //Hardcoded signature value i got from metamask
         const sig = '0xb35e661fe3ed8d3828fa715a6abe51fc5ca8916d440f2488d0823e95579f496626f883487ca9ddc2cf2bf7a9182451c7638448467cf759943d104423020b45061c'
-        const signature = wallet.signMessage(msgHash)
+        const signature = await wallet.signMessage(msgHash)
         expect(sig).equals(signature)
 
         // Remove hex prefix and v value
@@ -37,14 +37,14 @@ describe('EthWallet', () => {
 
     // Difference between sign and personal sign is that sign takes message hash, but personalSign takes message.
     // Personal does hashing inside
-    it('Should correctly implement signPersonalMessage', () => {
+    it('Should correctly implement signPersonalMessage', async () => {
         const msg = 'Hello'
         const msgHash = SG.libs.keccak256('\x19Ethereum Signed Message:\n' + msg.length + msg);
 
         // Hardcoded signature value i got from metamask
         const sig = '0xb35e661fe3ed8d3828fa715a6abe51fc5ca8916d440f2488d0823e95579f496626f883487ca9ddc2cf2bf7a9182451c7638448467cf759943d104423020b45061c'
         // Passing msg instead of hash
-        const signature = wallet.signPersonalMessage(msg)
+        const signature = await wallet.signPersonalMessage(msg)
         expect(sig).equals(signature)
 
         // Remove hex prefix and v value
@@ -56,7 +56,7 @@ describe('EthWallet', () => {
     })
 
 
-    it('Should correctly implement signTypedData', () => {
+    it('Should correctly implement signTypedData', async() => {
         // ToDo: rewrite test after non legacy signing method starts to be used
         const typedData = [{"type": "string", "name": "Message", "value": "Hi, Alice!"}, {
             "type": "uint32",
@@ -67,7 +67,7 @@ describe('EthWallet', () => {
         // Hardcoded typed data signature value i got from metamask
         const sig = "0x0ded1ad21b8b4628e3437edad0d01db9c7454e21669e4a4b6b9ba0fb759720263f8a3e5b55acb3b1c4a37d11cf0c221dfabf78b1075eef472223bdc6744087051b"
         // Passing msg instead of hash
-        const signature = wallet.signTypedData(typedData)
+        const signature = await wallet.signTypedData(typedData)
         expect(sig).equals(signature)
     })
 
