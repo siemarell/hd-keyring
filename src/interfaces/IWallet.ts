@@ -1,7 +1,7 @@
 export interface IWallet {
     getId(): string
     getSecret(): string
-    signTransaction(tx: any): any
+    signTransaction(tx: any): Promise<any>
     //signMessage(msgHash: string): string
 }
 

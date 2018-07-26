@@ -3,6 +3,7 @@ import HDNode = require("hdkey")
 import * as bip39 from 'bip39'
 import {WALLETS_MAP} from './walletsMap'
 import {range} from './util'
+import {EthWallet} from "./wallets";
 
 
 //const hdPathString = `m/44'/60'/0'/0`
@@ -85,14 +86,20 @@ export class HDKeyring implements IKeyring {
         return wallet.signTransaction(txData);
     }
 
-    async signMessage(accountId: string, bytes: Uint8Array): Promise<any> {
-        const wallet = this._getWalletForAccount(accountId)
-        return wallet.signMessage(bytes);
+    async signMessage(accountId: string, message: any): Promise<any> {
+        const wallet = this._getWalletForAccount(accountId) as EthWallet
+        return await wallet.signMessage(message);
     }
 
-    async signPersonalMessage(){ throw 'Not implemented' }
+    async signPersonalMessage(accountId: string, message: any){
+        const wallet = this._getWalletForAccount(accountId) as EthWallet
+        return await wallet.signPersonalMessage(message);
+    }
 
-    async singTypedData(){ throw 'Not implemented' }
+    async signTypedData(accountId: string, data: any){
+        const wallet = this._getWalletForAccount(accountId) as EthWallet
+        return await wallet.signPersonalMessage(data);
+    }
 
     async exportAccount(accountId: string) {
         const wallet = this._getWalletForAccount(accountId)
