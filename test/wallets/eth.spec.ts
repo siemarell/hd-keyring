@@ -28,13 +28,48 @@ describe('EthWallet', () => {
         expect(sig).equals(signature)
 
         // Remove hex prefix and v value
-        const signatureBuffer = Buffer.from(signature.slice(2,130), 'hex')
+        const signatureBuffer = Buffer.from(signature.slice(2, 130), 'hex')
         const msgHexBuffer = Buffer.from(msgHash, 'hex')
         // Add uncompressed key byte
-        const pubKeyBuffer = Buffer.from('04' + publicKey,'hex')
-        expect(ethUtil.secp256k1.verify(msgHexBuffer, signatureBuffer,pubKeyBuffer )).to.true
+        const pubKeyBuffer = Buffer.from('04' + publicKey, 'hex')
+        expect(ethUtil.secp256k1.verify(msgHexBuffer, signatureBuffer, pubKeyBuffer)).to.true
     })
 
+    // Difference between sign and personal sign is that sign takes message hash, but personalSign takes message.
+    // Personal does hashing inside
+    it('Should correctly implement signPersonalMessage', () => {
+        const msg = 'Hello'
+        const msgHash = SG.libs.keccak256('\x19Ethereum Signed Message:\n' + msg.length + msg);
+
+        // Hardcoded signature value i got from metamask
+        const sig = '0xb35e661fe3ed8d3828fa715a6abe51fc5ca8916d440f2488d0823e95579f496626f883487ca9ddc2cf2bf7a9182451c7638448467cf759943d104423020b45061c'
+        // Passing msg instead of hash
+        const signature = wallet.signPersonalMessage(msg)
+        expect(sig).equals(signature)
+
+        // Remove hex prefix and v value
+        const signatureBuffer = Buffer.from(signature.slice(2, 130), 'hex')
+        const msgHexBuffer = Buffer.from(msgHash, 'hex')
+        // Add uncompressed key byte
+        const pubKeyBuffer = Buffer.from('04' + publicKey, 'hex')
+        expect(ethUtil.secp256k1.verify(msgHexBuffer, signatureBuffer, pubKeyBuffer)).to.true
+    })
+
+
+    it('Should correctly implement signTypedData', () => {
+        // ToDo: rewrite test after non legacy signing method starts to be used
+        const typedData = [{"type": "string", "name": "Message", "value": "Hi, Alice!"}, {
+            "type": "uint32",
+            "name": "A number",
+            "value": "1337"
+        }]
+
+        // Hardcoded typed data signature value i got from metamask
+        const sig = "0x0ded1ad21b8b4628e3437edad0d01db9c7454e21669e4a4b6b9ba0fb759720263f8a3e5b55acb3b1c4a37d11cf0c221dfabf78b1075eef472223bdc6744087051b"
+        // Passing msg instead of hash
+        const signature = wallet.signTypedData(typedData)
+        expect(sig).equals(signature)
+    })
 
 
 })

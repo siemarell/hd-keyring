@@ -50,6 +50,7 @@ export class EthWallet implements IWallet {
     // personal_signTypedData, signs data along with the schema
     signTypedData(typedData: any) {
         const privateKey = this._wallet.getPrivateKey();
-        return sigUtil.signTypedData(privateKey, {data: typedData})
+        /// ToDo: use non legacy method
+        return sigUtil.signTypedDataLegacy(privateKey, {data: typedData})
     }
 }
