@@ -21,7 +21,7 @@ export class WavesWallet implements IWallet {
         return SG.libs.base58.encode(this.keyPair.public)
     }
 
-    getSecret(): string {
+    async getSecret() {
         return SG.libs.base58.encode(this.keyPair.private)
     }
 
@@ -32,7 +32,7 @@ export class WavesWallet implements IWallet {
     async signTransaction(txData: any) {
         const tools = <any>this.Waves.tools
         const transfer = await tools.createTransaction(txData.type, txData)
-        transfer.addProof(this.getSecret())
+        transfer.addProof(await this.getSecret())
         return await transfer.getJSON()
     }
 }

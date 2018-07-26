@@ -1,6 +1,3 @@
-import ethjswallet = require('ethereumjs-wallet')
-import ethUtil = require('ethereumjs-util')
-import sigUtil = require('eth-sig-util')
 import {IWallet} from "../interfaces";
 import EthSimpleKeyring = require('eth-simple-keyring');
 
