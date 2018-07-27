@@ -31,8 +31,8 @@ export class HDKeyring implements IKeyring {
 
     async deserialize(serialized: ISerialized) {
         if (serialized.mnemonic) this._initFromMnemonic(serialized.mnemonic)
-        if (serialized.accountNumbers) {
-            Object.entries(serialized.accountNumbers).forEach(async ([type, n]) => {
+        if (serialized.numberOfAccounts) {
+            Object.entries(serialized.numberOfAccounts).forEach(async ([type, n]) => {
                 await this.addAccounts(n, type)
             })
         }
@@ -125,5 +125,5 @@ export class HDKeyring implements IKeyring {
 
 interface ISerialized {
     mnemonic?: string,
-    accountNumbers?: { string: number }
+    numberOfAccounts?: Record<string,number>
 }

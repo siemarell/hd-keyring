@@ -75,6 +75,14 @@ describe('HDKeyring', () => {
     })
 
     it('Should serialize and deserialize', async () => {
+        const newKeyring = new HDKeyring({numberOfAccounts:{ETH:2}})
+        //await asleep(100)
+        const accountsNumber = (await newKeyring.getAccounts()).length
+
+        expect(accountsNumber).eql(2)
+    })
+
+    it('Should create wallets on start', async () => {
         await keyring.addAccounts(3)
         const accountsBefore = await keyring.getAccounts()
         const serialized = await keyring.serialize()
@@ -82,5 +90,4 @@ describe('HDKeyring', () => {
         const accountsAfter = await deserialized.getAccounts()
         expect(accountsBefore).eql(accountsAfter)
     })
-
 })
