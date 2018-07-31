@@ -4,10 +4,12 @@
     "baseUrl": "",
     "lib": [
       "ES2017",
+      "ES2015",
       "dom"
     ],
     "module": "commonjs",
-    "sourceMap": true,
+    "sourceMap": false,
+    "declaration": true,
     "target": "es6",
     "outDir": "/Users/siem/PycharmProjects/metamask-extension/app/scripts/waves/hd-keyring"
   },
